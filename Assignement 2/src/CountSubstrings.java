@@ -60,7 +60,7 @@ public class CountSubstrings {
         scannerFile.useDelimiter(" ");
         ArrayList<List<Character>> text = new ArrayList<>();
         while (scannerFile.hasNextLine())
-            text.add(Arrays.asList(scannerFile.nextLine().chars().mapToObj(c ->(char)c).toArray(Character[]::new)));
+            text.add(Arrays.asList(scannerFile.next().chars().mapToObj(c ->(char)c).toArray(Character[]::new)));
         scannerFile.close();
         return text;
     }
@@ -70,7 +70,7 @@ public class CountSubstrings {
         scannerFile.useDelimiter(" ");
         LinkedList<List<Character>> text = new LinkedList<>();
         while (scannerFile.hasNextLine())
-            text.add(Arrays.asList(scannerFile.nextLine().chars().mapToObj(c ->(char)c).toArray(Character[]::new)));
+            text.add(Arrays.asList(scannerFile.next().chars().mapToObj(c ->(char)c).toArray(Character[]::new)));
         scannerFile.close();
         return text;
     }
