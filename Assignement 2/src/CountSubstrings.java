@@ -5,7 +5,7 @@ import java.util.*;
 public class CountSubstrings {
     public static void main(String[] args) {
 
-        HashMap<String, List<String>> texts = new HashMap<>();
+        HashMap<String, List<List<Character>>> texts = new HashMap<>();
 
         UserInput userInput = getUserInput();
 
@@ -24,15 +24,15 @@ public class CountSubstrings {
         }
     }
 
-    private static HashMap<String, Result> countOccurrences(HashMap<String, List<String>> texts, String substring) {
+    private static HashMap<String, Result> countOccurrences(HashMap<String, List<List<Character>>> texts, List<Character> substring) {
         long time;
         HashMap<String, Result> Results = new HashMap<>();
         for (String key : texts.keySet()) {
-            List<String> text = texts.get(key);
+            List<List<Character>> text = texts.get(key);
             long deltaTime;
             int count = 0;
             time = System.currentTimeMillis();
-            for (String str : text) {
+            for (List<Character> str : text) {
                 count += countBrute(str, substring);
             }
             deltaTime = System.currentTimeMillis() - time;
@@ -44,43 +44,45 @@ public class CountSubstrings {
     private static UserInput getUserInput() {
         Scanner scannerConsole = new Scanner(System.in);
         File file;
-        String substring;
+        List<Character> substring;
         do {
             System.out.print("Please enter the path for the input file: ");
             file = new File(scannerConsole.nextLine());
         } while (!(file.exists() && !file.isDirectory()));
         System.out.print("Enter the pattern to look for: ");
-        substring = scannerConsole.nextLine();
+        substring = Arrays.asList(scannerConsole.nextLine().chars().mapToObj(c ->(char)c).toArray(Character[]::new));
         scannerConsole.close();
         return new UserInput(file, substring);
     }
 
-    private static ArrayList<String> readToArrayLists(File file) throws FileNotFoundException {
+    private static ArrayList<List<Character>> readToArrayLists(File file) throws FileNotFoundException {
         Scanner scannerFile = new Scanner(file);
-        ArrayList<String> text = new ArrayList<>();
+        scannerFile.useDelimiter(" ");
+        ArrayList<List<Character>> text = new ArrayList<>();
         while (scannerFile.hasNextLine())
-            text.add(scannerFile.nextLine());
+            text.add(Arrays.asList(scannerFile.nextLine().chars().mapToObj(c ->(char)c).toArray(Character[]::new)));
         scannerFile.close();
         return text;
     }
 
-    private static LinkedList<String> readToLinkedList(File file) throws FileNotFoundException {
+    private static LinkedList<List<Character>> readToLinkedList(File file) throws FileNotFoundException {
         Scanner scannerFile = new Scanner(file);
-        LinkedList<String> text = new LinkedList<>();
+        scannerFile.useDelimiter(" ");
+        LinkedList<List<Character>> text = new LinkedList<>();
         while (scannerFile.hasNextLine())
-            text.add(scannerFile.nextLine());
+            text.add(Arrays.asList(scannerFile.nextLine().chars().mapToObj(c ->(char)c).toArray(Character[]::new)));
         scannerFile.close();
         return text;
     }
 
-    private static int countBrute(String text, String substring) {
-        int m = substring.length();
-        int n = text.length();
+    private static int countBrute(List<Character> text, List<Character> substring) {
+        int m = substring.size();
+        int n = text.size();
         int count = 0;
         for (int i = 0; i <= n - m; i++) {
             int j;
             for (j = 0; j < m; j++) {
-                if (text.charAt(i + j) != substring.charAt(j))
+                if (text.get(i + j) != substring.get(j))
                     break;
             }
             if (j == m) count++;
@@ -90,9 +92,9 @@ public class CountSubstrings {
 
     public static class UserInput {
         private File file;
-        private String substring;
+        private List<Character> substring;
 
-        UserInput(File file, String substring) {
+        UserInput(File file, List<Character> substring) {
             this.file = file;
             this.substring = substring;
         }
@@ -101,7 +103,7 @@ public class CountSubstrings {
             return file;
         }
 
-        String getSubstring() {
+        List<Character> getSubstring() {
             return substring;
         }
     }
