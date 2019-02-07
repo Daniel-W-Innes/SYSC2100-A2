@@ -16,7 +16,7 @@ public class CountSubstrings {
             e.printStackTrace();
         }
 
-        HashMap<String, Result> results = countOccurrences(texts, userInput.getSubstring());
+        HashMap<String, Result> results = averageResults(texts, userInput.getSubstring(),1000);
 
         for (String key : results.keySet()) {
             Result result = results.get(key);
@@ -40,6 +40,30 @@ public class CountSubstrings {
         }
         return Results;
     }
+
+    private static HashMap<String, Result> averageResults(HashMap<String, List<List<Character>>> texts, List<Character> substring, int number) {
+        HashMap<String, Result> results;
+        HashMap<String, Result> resultsSum = new HashMap<String, Result>();
+        HashMap<String, Result> resultsAverage = new HashMap<String, Result>();
+        results = countOccurrences(texts, substring);
+        for (String key :texts.keySet()) {
+            resultsSum.put(key,results.get(key));
+        }
+
+        for (int i = 1; i < number; i++) {
+            results = countOccurrences(texts, substring);
+            for (String key :texts.keySet()) {
+                Result resultSum =  new Result(results.get(key).getDeltaTime() + resultsSum.get(key).getDeltaTime(),results.get(key).getCount() + resultsSum.get(key).getCount());
+                resultsSum.put(key,resultSum);
+            }
+        }
+        for (String key :texts.keySet()) {
+            Result resultAverage =  new Result(resultsSum.get(key).getDeltaTime()/number,resultsSum.get(key).getCount()/number);
+            resultsAverage.put(key,resultAverage);
+        }
+        return resultsAverage;
+    }
+
 
     private static UserInput getUserInput() {
         Scanner scannerConsole = new Scanner(System.in);
@@ -91,8 +115,8 @@ public class CountSubstrings {
     }
 
     public static class UserInput {
-        private File file;
-        private List<Character> substring;
+        private final File file;
+        private final List<Character> substring;
 
         UserInput(File file, List<Character> substring) {
             this.file = file;
@@ -109,8 +133,8 @@ public class CountSubstrings {
     }
 
     public static class Result {
-        private long deltaTime;
-        private int count;
+        private final long deltaTime;
+        private final int count;
 
         Result(long deltaTime, int count) {
             this.deltaTime = deltaTime;
