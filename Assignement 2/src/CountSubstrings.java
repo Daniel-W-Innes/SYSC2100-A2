@@ -1,86 +1,126 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 public class CountSubstrings {
-
     public static void main(String[] args) {
-        String textString = null;
-        ArrayList<String> textArrayList = new ArrayList<>();
-        String substring;
-        String fileName;
+
+        HashMap<String, List<String>> texts = new HashMap<>();
+
+        UserInput userInput = getUserInput();
+
+        try {
+            texts.put("ArrayLists", readToArrayLists(userInput.getFile()));
+            texts.put("LinkedList", readToLinkedList(userInput.getFile()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        HashMap<String, Result> results = countOccurrences(texts, userInput.getSubstring());
+
+        for (String key : results.keySet()) {
+            Result result = results.get(key);
+            System.out.println("Using " + key + ": " + result.getCount() + " matches, derived in " + result.getDeltaTime() + " milliseconds.");
+        }
+    }
+
+    private static HashMap<String, Result> countOccurrences(HashMap<String, List<String>> texts, String substring) {
         long time;
-        int matches = 0;
-        Scanner scanner = new Scanner(System.in);
-        while (textString == null) {
-            try {
-                System.out.print("Please enter the path for the input file: ");
-                fileName = scanner.nextLine();
-                textString = readToString(fileName);
-                textArrayList = readToArrayLists(fileName);
-            } catch (IOException e) {
-                System.out.println("Incorrect file name");
+        HashMap<String, Result> Results = new HashMap<>();
+        for (String key : texts.keySet()) {
+            List<String> text = texts.get(key);
+            long deltaTime;
+            int count = 0;
+            time = System.currentTimeMillis();
+            for (String str : text) {
+                count += countBrute(str, substring);
             }
+            deltaTime = System.currentTimeMillis() - time;
+            Results.put(key, new Result(deltaTime, count));
         }
+        return Results;
+    }
+
+    private static UserInput getUserInput() {
+        Scanner scannerConsole = new Scanner(System.in);
+        File file;
+        String substring;
+        do {
+            System.out.print("Please enter the path for the input file: ");
+            file = new File(scannerConsole.nextLine());
+        } while (!(file.exists() && !file.isDirectory()));
         System.out.print("Enter the pattern to look for: ");
-        substring = scanner.nextLine().toLowerCase();
-        time = System.currentTimeMillis();
-        System.out.println("Using Strings: " + (textString.split(Pattern.quote(substring), -1).length - 1) + " matches, derived in " + (System.currentTimeMillis() - time) + " milliseconds.");
-        time = System.currentTimeMillis();
-        for (int i = 0; i < textArrayList.size(); i++)
-            matches += (textArrayList.get(i).split(Pattern.quote(substring), -1).length - 1);
-        System.out.println("Using Strings: " + matches + " matches, derived in " + (System.currentTimeMillis() - time) + " milliseconds.");
+        substring = scannerConsole.nextLine();
+        scannerConsole.close();
+        return new UserInput(file, substring);
     }
 
-    /*
-     * Returns the lowest index at which substring pattern begins in text (or
-     * else -1).
-     */
-    private static int findBrute(List<Character> text, List<Character> pattern) {
-        int n = text.size();
-        int m = pattern.size();
-        for (int i = 0; i <= n - m; i++) { // try every starting index
-// within text
-            int k = 0; // k is index into pattern
-            while (k < m && text.get(i + k) == pattern.get(k))
-// kth character of pattern matches
-                k++;
-            if (k == m) // if we reach the end of the pattern,
-                return i; // substring text[i..i+m-1] is a match
-        }
-        return -1; // search failed
-    }
-
-    private static ArrayList<String> readToArrayLists(String fileName) throws IOException {
+    private static ArrayList<String> readToArrayLists(File file) throws FileNotFoundException {
+        Scanner scannerFile = new Scanner(file);
         ArrayList<String> text = new ArrayList<>();
-        File file = new File(fileName);
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
-        String line;
-        while ((line = br.readLine()) != null) {
-            text.add(line.toLowerCase());
-        }
-        br.close();
-        fr.close();
+        while (scannerFile.hasNextLine())
+            text.add(scannerFile.nextLine());
+        scannerFile.close();
         return text;
     }
 
-    private static String readToString(String fileName) throws IOException {
-        String text = "";
-        File file = new File(fileName);
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
-        String line;
-        while ((line = br.readLine()) != null) {
-            text = text.concat(line);
+    private static LinkedList<String> readToLinkedList(File file) throws FileNotFoundException {
+        Scanner scannerFile = new Scanner(file);
+        LinkedList<String> text = new LinkedList<>();
+        while (scannerFile.hasNextLine())
+            text.add(scannerFile.nextLine());
+        scannerFile.close();
+        return text;
+    }
+
+    private static int countBrute(String text, String substring) {
+        int m = substring.length();
+        int n = text.length();
+        int count = 0;
+        for (int i = 0; i <= n - m; i++) {
+            int j;
+            for (j = 0; j < m; j++) {
+                if (text.charAt(i + j) != substring.charAt(j))
+                    break;
+            }
+            if (j == m) count++;
         }
-        br.close();
-        fr.close();
-        return text.toLowerCase();
+        return count;
+    }
+
+    public static class UserInput {
+        private File file;
+        private String substring;
+
+        UserInput(File file, String substring) {
+            this.file = file;
+            this.substring = substring;
+        }
+
+        File getFile() {
+            return file;
+        }
+
+        String getSubstring() {
+            return substring;
+        }
+    }
+
+    public static class Result {
+        private long deltaTime;
+        private int count;
+
+        Result(long deltaTime, int count) {
+            this.deltaTime = deltaTime;
+            this.count = count;
+        }
+
+        long getDeltaTime() {
+            return deltaTime;
+        }
+
+        int getCount() {
+            return count;
+        }
     }
 }
