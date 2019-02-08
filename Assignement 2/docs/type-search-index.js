@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"<Unnamed>","l":"CountSubstrings"},{"p":"<Unnamed>","l":"CountSubstrings.Result"},{"p":"<Unnamed>","l":"CountSubstrings.UserInput"}]
