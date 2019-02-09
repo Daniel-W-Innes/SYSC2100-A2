@@ -122,7 +122,7 @@ public class CountSubstrings {
      * Read from file to ArrayLists parse by space.
      * @param file The file to read from.
      * @return The file as ArrayLists.
-     * @throws FileNotFoundException If the file dose not exist, this should never happen because file checking is done during input stage.
+     * @throws FileNotFoundException If the file does not exist, this should never happen because file checking is done during input stage.
      */
     private static ArrayList<List<Character>> readToArrayLists(File file) throws FileNotFoundException {
         Scanner scannerFile = new Scanner(file);
@@ -140,7 +140,7 @@ public class CountSubstrings {
      * Read from file to LinkedList parse by space.
      * @param file The file to read from.
      * @return The file as LinkedList.
-     * @throws FileNotFoundException If the file dose not exist, this should never happen because file checking is done during input stage.
+     * @throws FileNotFoundException If the file does not exist, this should never happen because file checking is done during input stage.
      */
     private static LinkedList<List<Character>> readToLinkedList(File file) throws FileNotFoundException {
         Scanner scannerFile = new Scanner(file);
@@ -157,7 +157,7 @@ public class CountSubstrings {
     /**
      * Count occurrences of substring in string using the brute-force substring matching algorithm.
      *
-     * Note findBrute is not used because it dose not find multiple occurrences of substring in each string. Therefore will be less efficient for substrings that occur multiple times within a word.
+     * Note findBrute is not used because it does not find multiple occurrences of substring in each string. Therefore will be less efficient for substrings that occur multiple times within a word.
      * @param string The string to search in.
      * @param substring The string to search for.
      * @return The number of substring in string.
@@ -166,12 +166,12 @@ public class CountSubstrings {
         int m = substring.size();
         int n = string.size();
         int count = 0;
+        int j;
         //loop from the start of the string(word) to the a point m(the size of the substring) chars from the end
         for (int i = 0; i <= n - m; i++) {
             //loop over the substring
-            int j;
             for (j = 0; j < m; j++) {
-                //if the j char of the substring dose not equal the char in the string at the parallel position
+                //if the j char of the substring does not equal the char in the string at the parallel position
                 if (string.get(i + j) != substring.get(j))
                     //if the string at position i is not the substring
                     break;
